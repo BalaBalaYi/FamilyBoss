@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<meta name="renderer" content="webkit" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no" />
+		<!-- load css -->
+		<link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/font/iconfont.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/main/index.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/jquery/calendar/stylesheets/simple-calendar.css}" media="all" />
+		<link rel="stylesheet" th:href="@{/css/main/search.css}" media="screen" type="text/css" />
+		<title>家庭管理后台首页</title>
+	</head>
+	<body>
+		<ul class='right-click-menu'>
+			<li><a href='javascript:;' data-event='fresh'>刷新</a></li>
+			<li><a href='javascript:;' data-event='close'>关闭</a></li>
+			<li><a href='javascript:;' data-event='other'>关闭其它</a></li>
+			<li><a href='javascript:;' data-event='all'>全部关闭</a></li>
+		</ul>
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header">
+				<!-- logo区域 -->
+				<div class="index-logo-box">
+					<a class="logo" href="#" title="FamilyBoss">FamilyBoss</a>
+				</div>
+				
+				<div class="index-menu-toggler">
+					<a class="navbar-toggler" href="#">☰</a>
+				</div>
+				
+				<!-- 搜索栏区域 -->
+				<div class="index-search">
+					<div class="webdesigntuts-workshop">
+						<form action="" method="">
+							<input type="search" placeholder="What are you looking for?">
+							<button>Search</button>
+						</form>
+					</div>
+				</div>
+				
+				<!-- 天气插件区域 -->
+				<div class="index-weather">
+					<div id="tp-weather-widget" class="xc"></div>
+				</div>
+	
+				<!-- 头部右侧导航 -->
+				<div class="header-right">
+					<ul class="layui-nav index-header-item right-menu">
+						<li class="layui-nav-item tab-menu">
+							<a href="javascript:;">
+								<i class="layui-icon">&#xe64c;</i>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a href="http://blog.csdn.net/balabalayi" target="_blank">CSDN</a></dd>
+								<dd><a href="https://github.com/balabalayi" target="_blank">GITHUB</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item tab-menu">
+							<a href="javascript:;">
+								<i class="layui-icon">&#xe631;</i>
+							</a>
+							<dl class="layui-nav-child">
+								<dd id="planet_dd"><a href="javascript:;" data-type="planet" class="other-active">行星引力</a></dd>
+								<dd id="calendar_dd"><a href="javascript:;" data-type="calendar" class="other-active">日历</a></dd>
+								<dd id="calculator_dd"><a href="javascript:;" data-type="calculator" class="other-active">计算器</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item tab-menu">
+							<a href="javascript:;">
+								<i class="layui-icon">&#xe614;</i>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a href="#">皮肤设置</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item tab-menu">
+							<a href="javascript:;">
+								<span>
+									<img class="img-avatar" th:src="@{/file/getImage.do?(name=${session.userInfo.imgName})}" />
+									<span class="hidden-md-down" th:text="${session.userInfo.name}"></span>
+								</span>
+							</a>
+							<dl class="layui-nav-child">
+								<dd id="toChangePwd_dd"><a id="toChangePwd" lay-id="01" class="site-active" href="javascript:;" rel="/user/toChangePwd.do">修改密码</a></dd>
+								<dd><a id="logout" href="#">登出</a></dd>
+							</dl>
+						</li>
+<!-- 						<li class="layui-nav-item tab-menu"> -->
+<!-- 							<a class="msg" href="javascript:;" data-url="msg.html" data-title="站内信息"><i class="iconfont" data-icon='&#xe63c;'>&#xe63c; </i><span class="msg-num">1</span></a> -->
+<!-- 						</li> -->
+					</ul>
+				</div>
+				
+			</div>
+	
+			<!-- 左侧导航-->
+			<div class="layui-side layui-bg-black index-left-bar">
+				<div class="layui-side-scroll">
+					<!--子菜单项-->
+					<p class="index-home tab-menu">
+						<a lay-id="00" class="site-active" href="javascript:;" data-type="tabAdd" data-url="main.html" data-title="后台首页" rel="/login/toIndex.do">
+							<i class="iconfont" data-icon='&#xe600;'>&#xe600;</i>
+							<span>后台首页</span>
+						</a>
+					</p>
+					<div id="submenu">
+						<ul class="layui-nav layui-nav-tree" lay-filter="left-bar">
+							<li class="layui-nav-item">
+								<a href="javascript:;">用户管理</a>
+								<dl class="layui-nav-child">
+									<dd><a lay-id="11" class="site-active" href="javascript:;" data-type="tabAdd" rel="/user/toUser.do">人员管理</a></dd>
+									<dd><a lay-id="12" class="site-active" href="javascript:;" data-type="tabAdd" rel="/user/group/toGroup.do">群组管理</a></dd>
+									<dd><a lay-id="13" class="site-active" href="javascript:;" data-type="tabAdd">角色管理</a></dd>
+									<dd><a lay-id="14" class="site-active" href="javascript:;" data-type="tabAdd">权限管理</a></dd>
+								</dl>
+							</li>
+							<li class="layui-nav-item">
+								<a href="javascript:;">物品管理</a>
+								<dl class="layui-nav-child">
+									<dd><a lay-id="21" class="site-active" href="javascript:;" data-type="tabAdd">物品管理</a></dd>
+								</dl>
+							</li>
+							<li class="layui-nav-item">
+								<a href="javascript:;">收入管理</a>
+								<dl class="layui-nav-child">
+									<dd><a lay-id="31" class="site-active" href="javascript:;" data-type="tabAdd">收入明细</a></dd>
+									<dd><a lay-id="32" class="site-active" href="javascript:;" data-type="tabAdd">收入汇总</a></dd>
+								</dl>
+							</li>
+							<li class="layui-nav-item">
+								<a href="javascript:;">支出管理</a>
+								<dl class="layui-nav-child">
+									<dd><a lay-id="41" class="site-active" href="javascript:;" data-type="tabAdd">支出明细</a></dd>
+									<dd><a lay-id="42" class="site-active" href="javascript:;" data-type="tabAdd">支出汇总</a></dd>
+								</dl>
+							</li>
+							<li class="layui-nav-item">
+								<a href="javascript:;">系统管理</a>
+								<dl class="layui-nav-child">
+									<dd><a lay-id="51" class="site-active" href="javascript:;" data-type="tabAdd" rel="/system/getSystemInfo.do">系统信息</a></dd>
+									<dd><a lay-id="52" class="site-active" href="javascript:;" data-type="tabAdd" rel="/druid">SQL监控</a></dd>
+								</dl>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- 左侧侧边导航结束 -->
+			
+			<!-- 右侧主体内容 -->
+			<div class="layui-body index-body">
+				<div class="layui-tab layui-tab-brief" id="id-tab" lay-filter="tab-sub-menu" lay-notAuto="true" lay-allowclose="true">
+					<ul class="layui-tab-title">
+						<li class="layui-this" id="admin-home" lay-id="0"><i class="iconfont">&#xe600;</i><em>后台首页</em></li>
+					</ul>
+					<div class="layui-tab-content">
+						<div class="layui-tab-item layui-show">
+							<iframe class="index-iframe" frameborder="0" data-id='0' th:src="@{/login/toIndex.do}"></iframe>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- 底部区域 -->
+			<div id="footer" class="layui-footer index-foot">
+				<div class="layui-mian">
+					<p class="index-copyright">
+						<span class="">2017 &copy;</span> Written by BalaBalaYi, <a href="https://github.com/BalaBalaYi/FamilyBoss" target="_blank">GitHub</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<input id="userId" type="hidden" th:value="${session.userInfo.id}" />
+		<input id="userName" type="hidden" th:value="${session.userInfo.name}" />
+		
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/jquery-2.2.4.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/layui/layui.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/calendar/javascripts/simple-calendar.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/cookie/jquery.cookie.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/main/index.js}"></script>
+		
+	</body>
+
+</html>

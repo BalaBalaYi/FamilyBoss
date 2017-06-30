@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<meta name="renderer" content="webkit" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no" />
+		<!-- load css -->
+		<link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.customer.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/jquery/sweetalert2/sweetalert2.min.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/components-md.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/jquery/ui/portlet/css/jquery.portlet.min.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/css/main/main.css}" media="all" />
+		<title>后台主页</title>
+	</head>
+	<body>
+		
+		<!-- 登录信息 -->
+		<fieldset class="layui-elem-field layui-field-title">
+			<legend><i class="layui-icon">&#xe60b;</i>&nbsp;登录信息</legend>
+		</fieldset>
+		
+		<blockquote class="layui-elem-quote" th:text="${session.userInfo.name + '
+			，您好！您上次的登录时间：' + #calendars.format(session.loginInfo.lastLoginTime,'yyyy-MM-dd HH:mm:ss') + '
+			， 上次登录地点：' + session.loginInfo.lastLoginAddress + '。'}"></blockquote>
+		
+		<hr>
+		<!-- 地图区域 -->
+		<div id="mapContainer">
+			<form class="layui-form" action="">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">地址查找：</label>
+						<div class="layui-input-inline">
+							<input id="suggestId" name="address" class="layui-input" type="text">
+						</div>
+						<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+					</div>
+				</div>
+			</form>
+			<div id="delay-progress" class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="delay">
+				<div class="layui-progress-bar" lay-percent="0%"></div>
+			</div>
+			<div id="map"></div>
+		</div>
+		
+		<!-- 面板 -->
+		<div class="row widget-row">
+			<div class="col-md-3">
+				<div class="widget-thumb widget-bg-color-grey-light text-uppercase margin-bottom-20 " >
+					<h4 class="widget-thumb-heading">Current Balance</h4>
+					<div class="widget-thumb-wrap">
+						<i class="widget-thumb-icon bg-green icon-bulb"></i>
+						<div class="widget-thumb-body">
+							<span class="widget-thumb-subtitle">USD</span>
+							<span class="widget-thumb-body-stat" data-counter="counterup" data-value="7,644">7,644</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="widget-thumb widget-bg-color-grey-light text-uppercase margin-bottom-20 ">
+					<h4 class="widget-thumb-heading">Weekly Sales</h4>
+					<div class="widget-thumb-wrap">
+						<i class="widget-thumb-icon bg-red icon-layers"></i>
+						<div class="widget-thumb-body">
+							<span class="widget-thumb-subtitle">USD</span>
+							<span class="widget-thumb-body-stat" data-counter="counterup" data-value="1,293">1,293</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="widget-thumb widget-bg-color-grey-light text-uppercase margin-bottom-20 ">
+					<h4 class="widget-thumb-heading">Biggest Purchase</h4>
+					<div class="widget-thumb-wrap">
+						<i class="widget-thumb-icon bg-purple icon-screen-desktop"></i>
+						<div class="widget-thumb-body">
+							<span class="widget-thumb-subtitle">USD</span>
+							<span class="widget-thumb-body-stat" data-counter="counterup" data-value="815">815</span>
+						</div>
+					</div>
+				</div>
+			</div>
+				<div class="col-md-3">
+					<div class="widget-thumb widget-bg-color-grey-light text-uppercase margin-bottom-20 ">
+						<h4 class="widget-thumb-heading">Average Monthly</h4>
+						<div class="widget-thumb-wrap">
+							<i class="widget-thumb-icon bg-blue icon-bar-chart"></i>
+						<div class="widget-thumb-body">
+							<span class="widget-thumb-subtitle">USD</span>
+							<span class="widget-thumb-body-stat" data-counter="counterup" data-value="5,071">5,071</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<fieldset class="layui-elem-field layui-field-title">
+			<legend><i class="layui-icon">&#xe60a;</i>&nbsp;概要信息</legend>
+		</fieldset>
+		
+		<div id="graphContainer">
+			<div class="layui-collapse">
+				<div class="layui-colla-item">
+					<h2 class="layui-colla-title">用户概况</h2>
+					<div class="layui-colla-content layui-show layui-show-graph">
+						<div class="graphLeft" id="userGraph1"></div>
+						<div class="graphRight" id="userGraph2"></div>
+					</div>
+				</div>
+				<div class="layui-colla-item">
+					<h2 class="layui-colla-title">物品概况</h2>
+					<div class="layui-colla-content layui-show layui-show-graph">
+						<div class="graphLeft" id="itemGraph1"></div>
+						<div class="graphRight" id="itemGraph2"></div>
+					</div>
+				</div>
+				<div class="layui-colla-item">
+					<h2 class="layui-colla-title">收入概况</h2>
+					<div class="layui-colla-content layui-show layui-show-graph">
+						<div class="graphLeft" id="incomeGraph1"></div>
+						<div class="graphRight" id="incomeGraph2"></div>
+					</div>
+				</div>
+				<div class="layui-colla-item">
+					<h2 class="layui-colla-title">支出概况</h2>
+					<div class="layui-colla-content layui-show layui-show-graph">
+						<div class="graphLeft" id="payGraph1"></div>
+						<div class="graphRight" id="payGraph2"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/jquery-2.2.4.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/layui/layui.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/echarts/echarts.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/sweetalert2/sweetalert2.min.js}"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=mRvo0q1tSCRCy6QxZlBMDRWpcLvtFNtB"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/main/main.js}"></script>
+
+	</body>
+	
+</html>

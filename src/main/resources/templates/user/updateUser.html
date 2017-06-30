@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Cache-Control" content="no-store" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<meta name="renderer" content="webkit" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no" />
+		<title>人员管理-修改成员信息</title>
+		<!-- load css -->
+		<link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/jquery/sweetalert2/sweetalert2.min.css}" media="all" />
+		<link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.customer.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/upload/cropperupload/css/cropper.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/upload/cropperupload/css/sitelogo.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/js/upload/cropperupload/css/font-awesome.min.css}" />
+	</head>
+	
+	<body>
+	
+		<div class="breadcrumb" style="margin: 10px;">
+			<span class="layui-breadcrumb">
+				<a th:href="@{/user/toUser.do}">人员管理</a>
+				<a href="javascript:void(0);">修改成员信息</a>
+			</span>
+		</div>
+	
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+			<legend><i class="layui-icon">&#xe63c;</i>&nbsp;修改成员信息</legend>
+		</fieldset>
+	
+		<form class="layui-form" action="">
+			<div class="img-upload-area">
+				<label class="layui-form-label img-view-label">头像预览</label>
+				<div class="layui-inline">
+					<img id="img_id" th:src="@{/file/getImage.do?(name=${user.imgName})}" style="border-radius: 100%; height: 180px; width: 180px;"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">账户状态</label>
+				<div class="layui-input-block">
+					<input type="hidden" name="id" th:value="${user.id}" />
+					<input type="radio" name="status" value="ON" title="开启" th:checked="${user.status == 'ON'} ? 'checked'" />
+					<input type="radio" name="status" value="OFF" title="关闭" th:checked="${user.status == 'OFF'} ? 'checked'" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">账户类型</label>
+				<div class="layui-input-block">
+					<input type="radio" name="type" value="1" title="普通账户" th:checked="${user.type == 1} ? 'checked'" />
+					<input type="radio" name="type" value="0" title="根账户（不可删除）" th:checked="${user.type == 0} ? 'checked'" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">IM</label>
+				<div class="layui-input-block">
+					<input type="radio" name="im" value="ON" title="开启" disabled="" checked="" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">姓名</label>
+				<div class="layui-input-inline">
+					<input type="text" name="name" th:value="${user.name}" lay-verify="required|name" autocomplete="off" placeholder="请输入真实姓名" class="layui-input" maxlength="32" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密码</label>
+				<div class="layui-input-inline">
+					<input id="password" type="password" name="password" th:value="${user.password}" lay-verify="pass" placeholder="请输入密码" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">请填写6到12位密码</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密码确认</label>
+				<div class="layui-input-inline">
+					<input type="password" name="rePassword" th:value="${user.password}" lay-verify="pass|rePass" placeholder="请再次输入密码" autocomplete="off" class="layui-input" />
+				</div>
+				<div class="layui-form-mid layui-word-aux">请再次确认密码</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">性别</label>
+				<div class="layui-input-block">
+					<input type="radio" name="sex" value="男" title="男" th:checked="${user.sex == '男'} ? 'checked'" />
+					<input type="radio" name="sex" value="女" title="女" th:checked="${user.sex == '女'} ? 'checked'" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">出生日期</label>
+					<div class="layui-input-inline">
+						<input type="text" name="birth" id="birth" th:value="${#calendars.format(user.birth,'yyyy-MM-dd')}" lay-verify="date" 
+							placeholder="yyyy-mm-dd" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, format: 'YYYY-MM-DD'})" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">年龄</label>
+					<div class="layui-input-inline">
+						<select name="age" lay-verify="required" lay-filter="age" lay-search="">
+							<option th:each="i:${#numbers.sequence(0, 150)}" th:text="${i}" th:value="${i}" th:selected="${i == user.age} ? 'selected'"></option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">住址</label>
+				<div class="layui-input-block">
+					<input type="text" name="address" lay-verify="address" autocomplete="off" placeholder="请输入住址" class="layui-input" maxlength="128" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">电话</label>
+					<div class="layui-input-inline">
+						<input type="tel" name="phone" th:value="${user.phone}" lay-verify="phone" autocomplete="off" placeholder="请输入电话号码" class="layui-input" />
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">邮箱</label>
+					<div class="layui-input-inline">
+						<input type="text" name="email" th:value="${user.email}" lay-verify="email" autocomplete="off" placeholder="请输入邮箱地址" class="layui-input" />
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-inline">
+					<label class="layui-form-label">父亲</label>
+					<div class="layui-input-inline">
+						<select name="fatherId" lay-verify="" lay-filter="father" lay-search="">
+							<option value="0" >无</option>
+							<option th:each="male:${maleList}" th:text="${male.name}" th:value="${male.id}" th:selected="${male.id == user.fatherId} ? 'selected'"></option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">母亲</label>
+					<div class="layui-input-inline">
+						<select name="motherId" lay-verify="" lay-filter="mother" lay-search="">
+							<option value="0" >无</option>
+							<option th:each="female:${femaleList}" th:text="${female.name}" th:value="${female.id}" th:selected="${female.id == user.motherId} ? 'selected'"></option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="layui-form-item layui-form-text">
+				<label class="layui-form-label">个人描述</label>
+				<div class="layui-input-block">
+					<textarea class="layui-textarea layui-hide" name="desc" th:text="${user.desc}" lay-verify="content" id="LAY_editor" maxlength="512"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">个人头像</label>
+				<div class="layui-input-inline" style="width: 90px;">
+					<button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#avatar-modal" >上传头像</button>
+				</div>
+				<div class="layui-input-inline upload-error" style="display: none;color: red;">
+					<label class="layui-form-label">上传失败，请重新上传！</label>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit="" lay-filter="updateUser">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+		
+		<!-- 上传图片区域 -->
+		<div class="upload-area">
+			<div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<!--<form class="avatar-form" action="upload-logo.php" enctype="multipart/form-data" method="post">-->
+						<form class="avatar-form">
+							<div class="modal-header">
+								<button class="close" data-dismiss="modal" type="button">&times;</button>
+								<h4 class="modal-title" id="avatar-modal-label">上传图片</h4>
+							</div>
+							<div class="modal-body">
+								<div class="avatar-body">
+									<div class="avatar-upload">
+										<input class="avatar-src" name="avatar_src" type="hidden">
+										<input class="avatar-data" name="avatar_data" type="hidden">
+										<label for="avatarInput" style="line-height: 35px;">图片上传</label>
+										<button class="btn btn-danger"  type="button" style="height: 35px;" onclick="$('input[id=avatarInput]').click();">请选择图片</button>
+										<span id="avatar-name"></span>
+										<input class="avatar-input hide" id="avatarInput" name="avatar_file" type="file"></div>
+									<div class="row">
+										<div class="col-md-9">
+											<div class="avatar-wrapper"></div>
+										</div>
+										<div class="col-md-3">
+											<div class="avatar-preview preview-lg" id="imageHead"></div>
+											<!--<div class="avatar-preview preview-md"></div>
+												<div class="avatar-preview preview-sm"></div>-->
+										</div>
+									</div>
+									<div class="row avatar-btns">
+										<div class="col-md-4">
+											<div class="btn-group">
+												<button class="btn btn-danger fa fa-undo" data-method="rotate" data-option="-90" type="button" title="Rotate -90 degrees"> 向左旋转</button>
+											</div>
+											<div class="btn-group">
+												<button class="btn  btn-danger fa fa-repeat" data-method="rotate" data-option="90" type="button" title="Rotate 90 degrees"> 向右旋转</button>
+											</div>
+										</div>
+										<div class="col-md-5" style="text-align: right;">								
+											<button class="btn btn-danger fa fa-arrows" data-method="setDragMode" data-option="move" type="button" title="移动">
+												<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;setDragMode&quot;, &quot;move&quot;)"></span>
+											</button>
+											<button type="button" class="btn btn-danger fa fa-search-plus" data-method="zoom" data-option="0.1" title="放大图片">
+												<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;zoom&quot;, 0.1)">
+												<!--<span class="fa fa-search-plus"></span>-->
+												</span>
+											</button>
+											<button type="button" class="btn btn-danger fa fa-search-minus" data-method="zoom" data-option="-0.1" title="缩小图片">
+												<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;zoom&quot;, -0.1)">
+												<!--<span class="fa fa-search-minus"></span>-->
+												</span>
+											</button>
+											<button type="button" class="btn btn-danger fa fa-refresh" data-method="reset" title="重置图片">
+												<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;reset&quot;)" aria-describedby="tooltip866214">
+											</button>
+										</div>
+										<div class="col-md-3">
+											<button class="btn btn-danger btn-block avatar-save fa fa-save" type="button" data-dismiss="modal">保存修改</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+		</div>
+
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/jquery-2.2.4.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/layui/layui.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/sweetalert2/sweetalert2.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/upload/cropperupload/js/cropper.min.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/upload/cropperupload/js/sitelogo.js}"></script>
+		<script type="text/javascript" charset="utf8" th:src="@{/js/upload/cropperupload/js/html2canvas.min.js}" ></script>
+		<script>
+			
+			// css
+			var height = $("#img_id").height() / 2 - $(".img-view-label").height();
+			$(".img-view-label").css("top", height + "px"); // 设置为一半高度
+			
+			
+			// layui 初始化
+			layui.use(['element', 'form', 'layedit', 'laydate', 'jquery'], function(){
+				var element = layui.element()
+					, form = layui.form()
+					, layedit = layui.layedit
+					, laydate = layui.laydate
+					, $ = layui.jquery;
+				
+				//创建一个编辑器
+				var editIndex = layedit.build('LAY_editor', {
+					tool: ['strong' //加粗
+							,'italic' //斜体
+							,'underline' //下划线
+							,'del' //删除线
+							,'|' //分割线
+							,'left' //左对齐
+							,'center' //居中对齐
+							,'right' //右对齐
+							,'link' //超链接
+							,'unlink' //清除链接
+							,'face' //表情
+							//,'image' //插入图片
+							,'help' //帮助
+						]
+				});
+				
+				//表单自定义验证规则
+				form.verify({
+					name: function(value){
+						if(value.length > 32){
+							return '用户名过长';
+						}
+					}
+					,rePass: function(value){
+						var pass = $("#password").val();
+						if(pass != value){
+							return '密码不一致，请确认密码输入';
+						}
+					}
+					,content: function(value){
+						layedit.sync(editIndex);
+					}
+				});
+				
+				//监听提交
+				form.on('submit(updateUser)', function(data){
+					var userStr = JSON.stringify(data.field);
+					swal({
+						title: '修改确认',
+						type: 'question',
+						showCancelButton: true,
+						confirmButtonText: '提交',
+						cancelButtonText: '取消',
+					}).then(function(isConfirm) {
+						if (isConfirm === true) {
+							$.ajax({
+								url: "/user/doUpdateUser.do",
+								type: "POST",
+								data: userStr,
+								contentType: "application/json;charset=UTF-8",
+								dataType: "json",
+								success: function(res){
+									swal({
+										title: res.updateResult,
+										text: res.updateResult == "修改成功！" ? "确认后将返回人员管理主页面" : "请联系管理员",
+										type: res.updateResult == "修改成功！" ? "success" : "error",
+										showCancelButton: true,
+										confirmButtonColor: "#DD6B55",
+										confirmButtonText: "确认",
+										cancelButtonText: "取消"
+									}).then(function(isConfirm){
+										location.href='/user/toUser.do';
+									});
+								},
+								error: function(jqXHP,textStatus,errorThrown){
+									swal({
+										title: "错误",
+										text: "网络或后台错误",
+										type: "error",
+										confirmButtonColor: "#DD6B55",
+										confirmButtonText: "确认"
+									});
+								}
+							});
+							
+						} else {}
+					});
+					return false;
+				});
+			});
+			
+			// ======================= 图片上传 =======================
+			//做个下简易的验证  大小 格式 
+			$('#avatarInput').on('change', function(e) {
+				var filemaxsize = 1024 * 2;//2M
+				var target = $(e.target);
+				var Size = target[0].files[0].size / 1024;
+				if(Size > filemaxsize) {
+					alert('图片过大，请重新选择!');
+					$(".avatar-wrapper").childre().remove;
+					return false;
+				}
+				if(!this.files[0].type.match(/image.*/)) {
+					alert('请选择正确的图片!')
+				} else {
+					var filename = document.querySelector("#avatar-name");
+					var texts = document.querySelector("#avatarInput").value;
+					var teststr = texts;
+					testend = teststr.match(/[^\\]+\.[^\(]+/i); //直接完整文件名的
+					filename.innerHTML = testend;
+				}
+			
+			});
+
+			$(".avatar-save").on("click", function() {
+				var img_lg = document.getElementById('imageHead');
+				// 截图小的显示框内的内容
+				html2canvas(img_lg, {
+					allowTaint: true,
+					taintTest: false,
+					onrendered: function(canvas) {
+						canvas.id = "mycanvas";
+						//生成base64图片数据
+						var dataUrl = canvas.toDataURL("image/jpeg");
+						var newImg = document.createElement("img");
+						newImg.src = dataUrl;
+						imagesAjax(dataUrl)
+					}
+				});
+			})
+			
+			function imagesAjax(src) {
+				var type = "user"; // 不同类型的头像上传
+				$.ajax({
+					url: "/file/imageUploadBase64.do",
+					data: {"data": src, "type" : type},
+					type: "POST",
+					dataType: 'json',
+					success: function(data) {
+						if(data.result == '0') {
+							$("#img_id").attr('src', src);
+						} else {
+							$(".upload-error").fadeIn(1000);
+						}
+					}
+				});
+			}
+			
+		</script>
+	
+	</body>
+	
+</html>

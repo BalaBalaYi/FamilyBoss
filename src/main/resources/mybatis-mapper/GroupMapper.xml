@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cty.family.dao.GroupDao">
+	<resultMap id="GroupMap" type="Group">
+		<result property="id" column="ID" jdbcType="INTEGER" />
+		<result property="name" column="NAME" jdbcType="VARCHAR" />
+		<result property="desc" column="GROUP_DESC" jdbcType="VARCHAR" />
+		<result property="status" column="GROUP_STATUS" jdbcType="VARCHAR" />
+		<result property="imgName" column="IMG_NAME" jdbcType="VARCHAR" />
+		<result property="imgUrl" column="IMG_URL" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryAll" resultMap="GroupMap">
+		select * from GROUP_INFO
+	</select>
+	
+	<select id="queryById" parameterType="Integer" resultMap="GroupMap">
+		select * from GROUP_INFO
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<select id="queryByName" parameterType="String" resultMap="GroupMap">
+		select * from GROUP_INFO
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	<select id="queryAllByUserId" parameterType="Integer" resultMap="GroupMap">
+		select a.* from GROUP_INFO a, USER_GROUP b
+		<where>
+			1 = 1
+			AND b.GROUP_ID = a.ID
+			AND b.USER_ID = #{userId,jdbcType=INTEGER}
+		</where>
+	</select>
+
+	<insert id="addGroup" parameterType="Group">
+		insert into GROUP_INFO
+				(
+				NAME,
+				GROUP_DESC,
+				GROUP_STATUS,
+				IMG_NAME,
+				IMG_URL
+				)
+			values
+				(
+				#{name,jdbcType=VARCHAR},
+				#{desc,jdbcType=VARCHAR},
+				#{status,jdbcType=VARCHAR},
+				#{imgName,jdbcType=VARCHAR},
+				#{imgUrl,jdbcType=VARCHAR}
+				)
+	</insert>
+	
+	<insert id="addGroupMembers" parameterType="Map">
+		insert into USER_GROUP
+				(
+				USER_ID,
+				GROUP_ID
+				)
+			values
+				<foreach collection="idList" item="item" index="index" separator="," >
+					(
+					#{item},
+					#{groupId}
+					)
+				</foreach> 
+	</insert>
+	
+	<update id="updateGroup" parameterType="Group">
+		update GROUP_INFO
+		<set>
+			<if test="name != null">NAME = #{name,jdbcType=VARCHAR},</if>
+			<if test="desc != null">GROUP_DESC = #{desc,jdbcType=VARCHAR},</if>
+			<if test="status != null">GROUP_STATUS = #{status,jdbcType=VARCHAR},</if>
+			<if test="imgName != null">IMG_NAME = #{imgName,jdbcType=VARCHAR},</if>
+			<if test="imgUrl != null">IMG_URL = #{imgUrl,jdbcType=VARCHAR}</if>
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<delete id="deleteGroup" parameterType="Integer">
+		delete from GROUP_INFO
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</delete>
+	
+	<delete id="deleteGroupMembers" parameterType="Integer">
+		delete from USER_GROUP
+		<where>
+			GROUP_ID = #{id,jdbcType=INTEGER}
+		</where>
+	</delete>
+
+</mapper>

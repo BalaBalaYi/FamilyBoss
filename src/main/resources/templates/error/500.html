@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		
+		<!-- Viewport metatags -->
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="320" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		
+		<link rel="stylesheet" type="text/css" th:href="@{/css/error/dandelion.css}" media="screen" />
+		<title>500错误页面</title>
+	</head>
+	
+	<body>
+		<!-- Main Wrapper. Set this to 'fixed' for fixed layout and 'fluid' for fluid layout' -->
+		<div id="da-wrapper" class="fluid">
+	
+			<!-- Content -->
+			<div id="da-content">
+		
+				<!-- Container -->
+				<div class="da-container clearfix">
+				
+					<div id="da-error-wrapper">
+						<div id="da-error-pin"></div>
+						<div id="da-error-code">
+							error <span>500</span>
+						</div>
+						<h1 class="da-error-heading">哎哟喂！后台出错啦！</h1>
+						<p>请迅速联系管理员！ </p>
+						<br/>
+						<div id="da-error-exception" th:text="${exception}" style="text-align: center;"></div>
+					</div>
+				</div>
+			</div>
+	
+			<!-- Footer -->
+			<div id="da-footer">
+				<div class="da-container clearfix"></div>
+			</div>
+			
+		</div>
+	
+	</body>
+</html>

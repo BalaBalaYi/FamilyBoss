@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<!-- 别名配置 -->
+	<typeAliases>
+		<typeAlias type="com.cty.family.entity.UserEntity" alias="User" />
+		<typeAlias type="com.cty.family.entity.ImageEntity" alias="Image" />
+		<typeAlias type="com.cty.family.entity.GroupEntity" alias="Group" />
+		<typeAlias type="com.cty.family.entity.UserLoginEntity" alias="UserLogin" />
+	</typeAliases>
+
+</configuration>

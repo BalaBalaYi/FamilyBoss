@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cty.family.dao.UserLoginDao">
+	<resultMap id="UserLoginMap" type="UserLogin">
+		<result property="userId" column="USER_ID" jdbcType="INTEGER" />
+		<result property="status" column="ONLINE_STATUS" jdbcType="VARCHAR" />
+		<result property="logoutTime" column="LOGOUT_TIME" jdbcType="TIMESTAMP" />
+		<result property="loginTime" column="LOGIN_TIME" jdbcType="TIMESTAMP" />
+		<result property="lastLoginTime" column="LAST_LOGIN_TIME" jdbcType="TIMESTAMP" />
+		<result property="loginIp" column="LOGIN_IP" jdbcType="VARCHAR" />
+		<result property="lastLoginIp" column="LAST_LOGIN_IP" jdbcType="VARCHAR" />
+		<result property="loginAddress" column="LOGIN_ADDRESS" jdbcType="VARCHAR" />
+		<result property="lastLoginAddress" column="LAST_LOGIN_ADDRESS" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryById" parameterType="Integer" resultMap="UserLoginMap">
+		select * from USER_LOGIN_INFO
+		<where>
+			USER_ID = #{userId,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<select id="queryAll" resultMap="UserLoginMap">
+		select * from USER_LOGIN_INFO
+	</select>
+	
+	<select id="queryStatusById" parameterType="Integer" resultType="String">
+		select ONLINE_STATUS from USER_LOGIN_INFO
+		<where>
+			USER_ID = #{userId,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<insert id="addUserLoginInfo" parameterType="UserLogin">
+		insert into USER_LOGIN_INFO
+				(
+					USER_ID,
+					ONLINE_STATUS,
+					LOGOUT_TIME,
+					LOGIN_TIME,
+					LAST_LOGIN_TIME,
+					LOGIN_IP,
+					LAST_LOGIN_IP,
+					LOGIN_ADDRESS,
+					LAST_LOGIN_ADDRESS
+				)
+			values
+				(
+					#{userId,jdbcType=INTEGER},
+					#{status,jdbcType=VARCHAR},
+					#{logoutTime,jdbcType=TIMESTAMP},
+					#{loginTime,jdbcType=TIMESTAMP},
+					#{lastLoginTime,jdbcType=TIMESTAMP},
+					#{loginIp,jdbcType=VARCHAR},
+					#{lastLoginIp,jdbcType=VARCHAR},
+					#{loginAddress,jdbcType=VARCHAR},
+					#{lastLoginAddress,jdbcType=VARCHAR}
+				)
+	</insert>
+	
+	<update id="updateUserLoginInfo" parameterType="UserLogin">
+		update USER_LOGIN_INFO
+		<set>
+			<if test="status != null">ONLINE_STATUS = #{status,jdbcType=VARCHAR},</if>
+			<if test="logoutTime != null">LOGOUT_TIME = #{logoutTime,jdbcType=TIMESTAMP},</if>
+			<if test="loginTime != null">LOGIN_TIME = #{loginTime,jdbcType=TIMESTAMP},</if>
+			<if test="lastLoginTime != null">LAST_LOGIN_TIME = #{lastLoginTime,jdbcType=TIMESTAMP},</if>
+			<if test="loginIp != null">LOGIN_IP = #{loginIp,jdbcType=VARCHAR},</if>
+			<if test="lastLoginIp != null">LAST_LOGIN_IP = #{lastLoginIp,jdbcType=VARCHAR},</if>
+			<if test="loginAddress != null">LOGIN_ADDRESS = #{loginAddress,jdbcType=VARCHAR},</if>
+			<if test="lastLoginAddress != null">LAST_LOGIN_ADDRESS = #{lastLoginAddress,jdbcType=VARCHAR}</if>
+		</set>
+		<where>
+			USER_ID = #{userId,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<update id="modifyLoginInfo" parameterType="UserLogin">
+		insert INTO USER_LOGIN_INFO
+			(
+				USER_ID,
+				ONLINE_STATUS,
+				LOGOUT_TIME,
+				LOGIN_TIME,
+				LAST_LOGIN_TIME,
+				LOGIN_IP,
+				LAST_LOGIN_IP,
+				LOGIN_ADDRESS,
+				LAST_LOGIN_ADDRESS
+			)
+			VALUES
+			(
+				#{userId,jdbcType=INTEGER},
+				#{status,jdbcType=VARCHAR},
+				#{logoutTime,jdbcType=TIMESTAMP},
+				#{loginTime,jdbcType=TIMESTAMP},
+				#{lastLoginTime,jdbcType=TIMESTAMP},
+				#{loginIp,jdbcType=VARCHAR},
+				#{lastLoginIp,jdbcType=VARCHAR},
+				#{loginAddress,jdbcType=VARCHAR},
+				#{lastLoginAddress,jdbcType=VARCHAR}
+			)
+			ON DUPLICATE KEY UPDATE
+				ONLINE_STATUS = #{status,jdbcType=VARCHAR}
+				<if test="logoutTime != null">,LOGOUT_TIME = #{logoutTime,jdbcType=TIMESTAMP}</if>
+				<if test="loginTime != null">,LOGIN_TIME = #{loginTime,jdbcType=TIMESTAMP}</if>
+				<if test="lastLoginTime != null">,LAST_LOGIN_TIME = #{lastLoginTime,jdbcType=TIMESTAMP}</if>
+				<if test="loginIp != null">,LOGIN_IP = #{loginIp,jdbcType=VARCHAR}</if>
+				<if test="lastLoginIp != null">,LAST_LOGIN_IP = #{lastLoginIp,jdbcType=VARCHAR}</if>
+				<if test="loginAddress != null">,LOGIN_ADDRESS = #{loginAddress,jdbcType=VARCHAR}</if>
+				<if test="lastLoginAddress != null">,LAST_LOGIN_ADDRESS = #{lastLoginAddress,jdbcType=VARCHAR}</if>
+	</update>
+
+</mapper>

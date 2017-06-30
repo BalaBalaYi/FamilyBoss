@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cty.family.dao.UserDao">
+	<resultMap id="UserMap" type="User">
+		<result property="id" column="ID" jdbcType="INTEGER" />
+		<result property="name" column="NAME" jdbcType="VARCHAR" />
+		<result property="password" column="PASSWORD" jdbcType="VARCHAR" />
+		<result property="sex" column="SEX" jdbcType="VARCHAR" />
+		<result property="age" column="AGE" jdbcType="INTEGER" />
+		<result property="birth" column="BIRTH" jdbcType="TIMESTAMP" />
+		<result property="address" column="ADDRESS" jdbcType="VARCHAR" />
+		<result property="phone" column="PHONE" jdbcType="VARCHAR" />
+		<result property="email" column="EMAIL" jdbcType="VARCHAR" />
+		<result property="fatherId" column="FATHER_ID" jdbcType="INTEGER" />
+		<result property="motherId" column="MOTHER_ID" jdbcType="INTEGER" />
+		<result property="desc" column="USER_DESC" jdbcType="VARCHAR" />
+		<result property="type" column="ACCT_TYPE" jdbcType="INTEGER" />
+		<result property="status" column="ACCT_STATUS" jdbcType="VARCHAR" />
+		<result property="imgName" column="IMG_NAME" jdbcType="VARCHAR" />
+		<result property="imgUrl" column="IMG_URL" jdbcType="VARCHAR" />
+		<result property="im" column="IM" jdbcType="VARCHAR" />
+		<result property="sign" column="SIGN" jdbcType="VARCHAR" />
+		<result property="reserved1" column="RESERVED1" jdbcType="VARCHAR" />
+		<result property="reserved2" column="RESERVED2" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryAll" resultMap="UserMap">
+		select * from USER_INFO
+	</select>
+	
+	<select id="queryAllOn" resultMap="UserMap">
+		select * from USER_INFO
+		<where>
+			STATUS = 'ON'
+		</where>
+	</select>
+	
+	<select id="queryById" parameterType="Integer" resultMap="UserMap">
+		select * from USER_INFO 
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<select id="queryByName" parameterType="String" resultMap="UserMap">
+		select * from USER_INFO 
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	<select id="queryAllMale" resultMap="UserMap">
+		select * from USER_INFO 
+		<where>
+			SEX = '男'
+		</where>
+	</select>
+	
+	<select id="queryAllFemale" resultMap="UserMap">
+		select * from USER_INFO 
+		<where>
+			SEX = '女'
+		</where>
+	</select>
+	
+	<select id="queryAllIdAndName" resultMap="UserMap">
+		select ID,NAME from USER_INFO
+	</select>
+	
+	<select id="queryWithOutGroup" resultMap="UserMap">
+		select * from USER_INFO a
+		<where>
+			NOT EXISTS(
+				SELECT 1 FROM USER_GROUP b
+				<where>
+					b.user_id = a.id
+				</where>
+			)
+		</where>
+	</select>
+	
+	<select id="queryByGroupId" parameterType="Integer" resultMap="UserMap">
+		select a.* from USER_INFO a, USER_GROUP b
+		<where>
+			1 = 1
+			and b.USER_ID = a.ID
+			and b.GROUP_ID = #{id,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<select id="queryAllIdAndNameByGroupId" parameterType="Integer" resultMap="UserMap">
+		select a.ID, a.NAME from USER_INFO a, USER_GROUP b
+		<where>
+			1 = 1
+			and b.USER_ID = a.ID
+			and b.GROUP_ID = #{id,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<insert id="addUser" parameterType="User">
+		insert into USER_INFO
+			(
+				NAME,
+				PASSWORD,
+				SEX,
+				AGE,
+				BIRTH,
+				ADDRESS,
+				PHONE,
+				EMAIL,
+				FATHER_ID,
+				MOTHER_ID,
+				USER_DESC,
+				ACCT_TYPE,
+				ACCT_STATUS,
+				IMG_NAME,
+				IMG_URL,
+				IM,
+				SIGN,
+				RESERVED1,
+				RESERVED2
+			)
+		values
+			(
+				#{name,jdbcType=VARCHAR},
+				#{password,jdbcType=VARCHAR},
+				#{sex,jdbcType=VARCHAR},
+				#{age,jdbcType=INTEGER},
+				#{birth,jdbcType=TIMESTAMP},
+				#{address,jdbcType=VARCHAR},
+				#{phone,jdbcType=VARCHAR},
+				#{email,jdbcType=VARCHAR},
+				#{fatherId,jdbcType=INTEGER},
+				#{motherId,jdbcType=INTEGER},
+				#{desc,jdbcType=VARCHAR},
+				#{type,jdbcType=INTEGER},
+				#{status,jdbcType=VARCHAR},
+				#{imgName,jdbcType=VARCHAR},
+				#{imgUrl,jdbcType=VARCHAR},
+				#{im,jdbcType=VARCHAR},
+				#{sign,jdbcType=VARCHAR},
+				#{reserved1,jdbcType=VARCHAR},
+				#{reserved2,jdbcType=VARCHAR}
+			)
+	</insert>
+	
+	<update id="updateUser" parameterType="User">
+		update USER_INFO
+		<set>
+			<if test="name != null">NAME = #{name,jdbcType=VARCHAR},</if>
+			<if test="password != null">PASSWORD = #{password,jdbcType=VARCHAR},</if>
+			<if test="sex != null">SEX = #{sex,jdbcType=VARCHAR},</if>
+			<if test="age != null">AGE = #{age,jdbcType=INTEGER},</if>
+			<if test="birth != null">BIRTH = #{birth,jdbcType=TIMESTAMP},</if>
+			<if test="address != null">ADDRESS = #{address,jdbcType=VARCHAR},</if>
+			<if test="phone != null">PHONE = #{phone,jdbcType=VARCHAR},</if>
+			<if test="email != null">EMAIL = #{email,jdbcType=VARCHAR},</if>
+			<if test="fatherId != null">FATHER_ID = #{fatherId,jdbcType=INTEGER},</if>
+			<if test="motherId != null">MOTHER_ID = #{motherId,jdbcType=INTEGER},</if>
+			<if test="desc != null">USER_DESC = #{desc,jdbcType=VARCHAR},</if>
+			<if test="type != null">ACCT_TYPE = #{type,jdbcType=INTEGER},</if>
+			<if test="status != null">ACCT_STATUS = #{status,jdbcType=VARCHAR},</if>
+			<if test="imgName != null">IMG_NAME = #{imgName,jdbcType=VARCHAR},</if>
+			<if test="imgUrl != null">IMG_URL = #{imgUrl,jdbcType=VARCHAR},</if>
+			<if test="im != null">IM = #{im,jdbcType=VARCHAR},</if>
+			<if test="sign != null">SIGN = #{sign,jdbcType=VARCHAR},</if>
+			<if test="reserved1 != null">RESERVED1 = #{reserved1,jdbcType=VARCHAR},</if>
+			<if test="reserved2 != null">RESERVED2 = #{reserved2,jdbcType=VARCHAR}</if>
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<update id="onUser" parameterType="Integer">
+		update USER_INFO
+		<set>
+			ACCT_STATUS = 'ON'
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<update id="offUser" parameterType="Integer">
+		update USER_INFO
+		<set>
+			ACCT_STATUS = 'OFF'
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+
+	<delete id="deleteUser" parameterType="Integer">
+		delete from USER_INFO 
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</delete>
+	
+</mapper>
