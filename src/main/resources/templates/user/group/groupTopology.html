@@ -45,7 +45,7 @@
 				<div class="layui-inline">
 					<div class="layui-input-block" style="margin-left: 0px;">
 						<button type="button" id="showGroupTopology" class="layui-btn" lay-submit="" lay-filter="showGroupTopology">显示</button>
-						<button type="button" id="fitTopology" class="layui-btn layui-btn-warm" title="重新校准"><i class="layui-icon">&#x1002;</i></button>
+						<button type="button" id="fitTopology" class="layui-btn layui-btn-warm" title="重新校准"><i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop">&#x1002;</i></button>
 					</div>
 				</div>
 				<div class="layui-inline">
@@ -68,9 +68,14 @@
 			</div>
 		</form>
 		
-		<hr/>
-		<div id="topology" style="text-align: center;"></div>
-		<hr/>
+		<hr class="top-hr"/>
+		<div id="loading-progress" class="layui-progress" lay-filter="loading" style="top: -10px; ">
+			<div class="layui-progress-bar" lay-percent="0%"></div>
+		</div>
+		<div class="topology-area">
+			<div id="topology" style="text-align: center; "></div>
+		</div>
+		<hr class="bot-hr"/>
 		
 		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/jquery-2.2.4.min.js}"></script>
 		<script type="text/javascript" charset="utf8" th:src="@{/layui/layui.js}"></script>
@@ -83,10 +88,10 @@
 			$("#topology").height($(window).height() - $("#topology").offset().top - 50);
 			
 			// laiui 初始化
+			var element; // 共有此变量
 			layui.use(['element', 'form', 'jquery'], function(){
-				
-				var element = layui.element()
-					, form = layui.form()
+				element = layui.element();
+				var form = layui.form()
 					, $ = layui.jquery;
 				
 				// 监听群组级联选择，以生成用户列表
@@ -124,14 +129,17 @@
 					focusNode(data.value);
 				});
 				
-				// 监听级联菜单用户的选择，实现拓扑图聚焦
+				// 监听刷新摁扭，拓扑reset
 				$("#fitTopology").click(function(){
+					// 容器高度调整
+					$("#topology").height($(window).height() - $("#topology").offset().top - 50);
 					fitAnimated();
 				});
 				
 				// 监听提交
 				form.on('submit(showGroupTopology)', function(data){
-					
+					// 设置加载进度条为0%
+					element.progress('loading', '0%');
 					var groupId = $("#group_select1").val();
 					$.ajax({
 						url: "/user/queryByGroupId.do",
@@ -139,8 +147,8 @@
 						data: {"id": groupId},
 						dataType: "json",
 						success: function(res){
-							// 容器高度调整
-							$("#topology").animate({height: $(window).height() - $("#topology").offset().top - 50 + 'px'});
+							// 设置加载进度条为30%
+							element.progress('loading', '30%');
 							// 绘图
 							topology(res);
 						},
@@ -194,7 +202,7 @@
 						edgesData[edgesData.length] = {from: value.id, to: value.motherId, label: '母'};
 					}
 				});
-				
+				element.progress('loading', '60%'); // 设置加载进度条为60%
 				var nodes = new vis.DataSet(nodesData);
 				var edges = new vis.DataSet(edgesData);
 				
@@ -220,14 +228,43 @@
 						shadow: true
 					},
 					interaction: {hover: true},
-// 					animation: {
-// 						duration: 3000,
-// 						easingFunction: "easeInOutQuad"
-// 					}
 				};
-				
+				element.progress('loading', '70%'); // 设置加载进度条为70%
 				// 初始化拓扑图
 				network = new vis.Network(container, data, options);
+				
+				// 监听拓扑图绘制，更新进度条进度
+				network.once("initRedraw", function() {
+					element.progress('loading', '80%'); // 设置加载进度条为80%
+				});
+				
+				network.once("beforeDrawing", function() {
+					element.progress('loading', '100%'); // 设置加载进度条为100%
+				});
+				
+				// 初始化显示动画
+				network.once("afterDrawing", function() {
+					network.fit({
+						animation: {
+							duration: 3000,
+							easingFunction: 'easeOutQuint'
+						}
+					});
+				});
+				
+				// 鼠标样式
+				network.on('hoverNode', function () {
+					changeCursor('grab');
+				});
+				network.on('dragStart', function () {
+					changeCursor('grabbing');
+				});
+				network.on('dragging', function () {
+					changeCursor('grabbing');
+				});
+				network.on('dragEnd', function () {
+					changeCursor('grab');
+				});
 			}
 			
 			// 聚焦事件
@@ -253,6 +290,12 @@
 					}
 				};
 				network.fit({animation:options});
+			}
+			
+			// 修改鼠标样式
+			var changeCursor = function changeCursor(newCursorStyle){
+				var networkCanvas = document.getElementById("topology").getElementsByTagName("canvas")[0]
+				networkCanvas.style.cursor = newCursorStyle;
 			}
 
 		</script>

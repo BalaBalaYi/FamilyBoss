@@ -34,7 +34,7 @@ public class LoginListenner implements HttpSessionAttributeListener {
 			if (map.get(user.getId()) != null) {
 				HttpSession session = map.get(user.getId());
 				session.removeAttribute("userInfo");
-				session.invalidate();
+//				session.invalidate();
 				logger.info("清除重复登录用户的session信息");
 			}
 			map.put(user.getId(), event.getSession());

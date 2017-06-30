@@ -13,12 +13,13 @@ layui.use(['element', 'layer'], function(){
 	, layer = layui.layer;
 	
 	//模拟进度条loading（1s延迟）
+	$(".delay-area").fadeIn("fast");
 	var n = 0, timer = setInterval(function(){
 		n = n + 1;
 		if(n > 100){
 			n = 100;
 			clearInterval(timer);
-			$("#delay-progress").fadeOut("fast");
+			$(".delay-area").fadeOut("fast");
 			$("#map").fadeIn(2000);
 		}
 		element.progress('delay', n + '%');

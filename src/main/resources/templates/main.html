@@ -45,8 +45,11 @@
 					</div>
 				</div>
 			</form>
-			<div id="delay-progress" class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="delay">
-				<div class="layui-progress-bar" lay-percent="0%"></div>
+			<div class="delay-area" style="display: none;">
+				<div id="delay-progress-tips" style="font-size: 30px; line-height: 250px; text-align: center;">地图加载中......</div>
+				<div id="delay-progress" class="layui-progress layui-progress-big" lay-showpercent="true" lay-filter="delay">
+					<div class="layui-progress-bar" lay-percent="0%"></div>
+				</div>
 			</div>
 			<div id="map"></div>
 		</div>

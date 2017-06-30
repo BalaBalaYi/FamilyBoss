@@ -51,6 +51,7 @@ public class LoginController {
 			logger.info("用户：" + name + " 登录成功！");
 			// 登录成功的用户加入session
 			UserEntity user = (UserEntity) resultMap.get("user");
+			session.setMaxInactiveInterval(30 * 60); // session默认超时时间：半小时
 			session.setAttribute("userInfo", user);
 			
 			// 获取登录信息
