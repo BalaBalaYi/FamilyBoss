@@ -1,5 +1,7 @@
 package com.cty.family.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.cty.family.entity.UserLoginEntity;
@@ -9,9 +11,15 @@ public interface UserLoginDao {
 
 	/**
 	 * 查询所有登录记录
-	 * @return
+	 * @return UserLoginEntity
 	 */
 	public UserLoginEntity queryAll();
+	
+	/**
+	 * 查询所有在线的用户
+	 * @return List<UserLoginEntity>
+	 */
+	public List<UserLoginEntity> queryAllOnline();
 	
 	/**
 	 * 根据用户id查询登录记录

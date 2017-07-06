@@ -54,6 +54,16 @@ public class MyWebSocket {
 		// 添加socket
 		webSocketMap.put(userId, this); // 加入map中
 		logger.info("有新连接加入！当前在线人数为" + getOnlineCount());
+		
+		// 发送系统消息
+		try{
+			if(!sendSysMessageHandler(Integer.parseInt(userId), 0)){
+				logger.error("发送系统消息失败！");
+			}
+		} catch (Exception e) {
+			logger.error("发送系统消息失败！", e);
+		}
+		
 	}
 
 	/**
@@ -62,8 +72,16 @@ public class MyWebSocket {
 	@OnClose
 	public void onClose(@PathParam("userId")String userId) {
 		webSocketMap.remove(userId, this); // 从map中删除
-//		subOnlineCount(); // 在线数减1
 		logger.info("有一连接关闭！当前在线人数为" + getOnlineCount());
+		
+		// 发送系统消息
+		try{
+			if(!sendSysMessageHandler(Integer.parseInt(userId), 1)){
+				logger.error("发送系统消息失败！");
+			}
+		} catch (Exception e) {
+			logger.error("发送系统消息失败！", e);
+		}
 	}
 
 	/**
@@ -121,6 +139,12 @@ public class MyWebSocket {
 						logger.error("FamiliBoss-IM 发送消息异常！", e);
 					}
 				}
+			} else if ("tip".equals(msgType)) {
+				try {
+					sendTipMessageHandler(jsonObject);
+				} catch (IOException e) {
+					logger.error("FamiliBoss-IM 发送消息异常！", e);
+				}
 			} else {
 				logger.warn("出现不支持的消息类型！type:" + msgType);
 				return;
@@ -154,9 +178,64 @@ public class MyWebSocket {
 			error.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 给所有在线用户发送系统消息
+	 * @param userId
+	 * @param type 0:上线；1：下线；
+	 * @return
+	 * @throws IOException 
+	 */
+	public boolean sendSysMessageHandler(Integer userId, Integer type) throws IOException {
+		
+		JSONObject returnMsgJson = new JSONObject();
+		returnMsgJson.put("msgType", "sys");
+		returnMsgJson.put("id", userId);
+		
+		if(type == 0){
+			returnMsgJson.put("type", "online");
+		} else if (type == 1) {
+			returnMsgJson.put("type", "offline");
+		}
+		// 发送
+		for(String reciverId : webSocketMap.keySet()){
+			MyWebSocket reciever = webSocketMap.get(reciverId);
+			reciever.sendMessage(returnMsgJson.toString());
+		}
+		return true;
+	}
 
 	/**
-	 * 消息处理
+	 * 给指定用户发送提示消息
+	 * @param tip
+	 * @return
+	 * @throws IOException 
+	 */
+	public boolean sendTipMessageHandler(JSONObject tip) throws IOException {
+		
+		JSONObject returnMsgJson = new JSONObject();
+		String sender = (String) tip.get("sender"); // 发送方id
+		String senderName = (String) tip.get("senderName"); // 发送方姓名
+		String reciever = (String) tip.get("reciever"); // 接收方id
+		String recieverName = (String) tip.get("recieverName"); // 接收方姓名
+		String data = (String) tip.get("data"); // 消息
+		
+		returnMsgJson.put("msgType", "tip");
+		returnMsgJson.put("sender", sender);
+		returnMsgJson.put("senderName", senderName);
+		returnMsgJson.put("reciever", reciever);
+		returnMsgJson.put("recieverName", recieverName);
+		returnMsgJson.put("data", data);
+		
+		// 发送
+		MyWebSocket recieverSocket = webSocketMap.get(reciever);
+		recieverSocket.sendMessage(returnMsgJson.toString());
+		
+		return true;
+	}
+	
+	/**
+	 * 聊天消息处理
 	 * @param src
 	 * @param dist
 	 * @return
@@ -173,6 +252,7 @@ public class MyWebSocket {
 		String content = (String) src.get("content"); // 消息
 		String avatar = (String) src.get("avatar"); // 消息来源用户头像
 		JSONObject returnMsgJson = new JSONObject();
+		returnMsgJson.put("msgType", "chat");
 		returnMsgJson.put("id", id);
 		returnMsgJson.put("username", username);
 		returnMsgJson.put("content", content);

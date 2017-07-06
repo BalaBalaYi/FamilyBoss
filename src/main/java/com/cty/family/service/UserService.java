@@ -80,7 +80,7 @@ public class UserService {
 		}
 		
 		// 更新用户登录信息
-		boolean updateLoginInfoResult = modifyLoginInfo(user, ip, 0);
+		boolean updateLoginInfoResult = modifyLoginInfo(user.getId(), ip, 0);
 		if(!updateLoginInfoResult){
 			logger.error("用户登录，更新用户登录信息失败！");
 		}
@@ -91,18 +91,18 @@ public class UserService {
 	
 	/**
 	 * 添加/修改用户登录信息
-	 * @param user
+	 * @param id
 	 * @param ip
 	 * @param type 0：登录；1：登出
 	 * @return
 	 */
-	@CacheEvict(value = "login_status", key = "#user.id")
-	public boolean modifyLoginInfo(UserEntity user, String ip, Integer type){
+	@CacheEvict(value = "login_status", key = "#id")
+	public boolean modifyLoginInfo(Integer id, String ip, Integer type){
 		
-		logger.debug("记录" + (type == 0 ? "登录" : "登出") + "信息，用户：" + user.toString() + "，IP地址：" + ip);
+		logger.debug("记录" + (type == 0 ? "登录" : "登出") + "信息，用户id：" + id + "，IP地址：" + ip);
 		
 		UserLoginEntity userLoginInfo = new UserLoginEntity();
-		userLoginInfo.setUserId(user.getId());
+		userLoginInfo.setUserId(id);
 		
 		Date now = new Date();
 		
@@ -118,7 +118,7 @@ public class UserService {
 				userLoginInfo.setLastLoginAddress("");
 				userLoginInfo.setLogoutTime(now);
 				// 登出时一定已经存在登录信息，则取回登录信息中的登录时间作为上一次登录时间
-				UserLoginEntity lastLoginInfo = userLoginDao.queryById(user.getId());
+				UserLoginEntity lastLoginInfo = userLoginDao.queryById(id);
 				userLoginInfo.setLastLoginTime(lastLoginInfo.getLoginTime());
 			}
 			int result = userLoginDao.modifyLoginInfo(userLoginInfo);
@@ -144,6 +144,22 @@ public class UserService {
 			userList = userDao.queryAll();
 		} catch (Exception e) {
 			logger.error("查询所有用户信息异常！", e);
+			return null;
+		}
+		return userList;
+	}
+	
+	/**
+	 * 查询所有在线用户信息
+	 * @return
+	 */
+	public List<UserEntity> getAllOnlineUsersInfo() {
+		
+		List<UserEntity> userList;
+		try {
+			userList = userDao.queryAllOnlineInfo();
+		} catch (Exception e) {
+			logger.error("查询所有在线用户信息异常！", e);
 			return null;
 		}
 		return userList;
@@ -530,6 +546,32 @@ public class UserService {
 	}
 	
 	/**
+	 * 修改用户签名
+	 * @param id
+	 * @param sign
+	 * @return
+	 */
+	@CacheEvict(value = "user", key = "#id")
+	public boolean updateUserSign(Integer id, String sign) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("id", id);
+		params.put("sign", sign);
+		
+		try {
+			int updateResult = userDao.updateUserSign(params);
+			if(updateResult != 1) {
+				logger.info("向数据库修改用户签名失败！");
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error("向数据库修改签名失败！用户id：" + id, e);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * 删除用户
 	 * @param id
 	 * @return
@@ -749,5 +791,7 @@ public class UserService {
 		}
 		return loginInfo;
 	}
+
+
 
 }

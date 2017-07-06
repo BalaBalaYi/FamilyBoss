@@ -24,6 +24,13 @@
 		select * from USER_LOGIN_INFO
 	</select>
 	
+	<select id="queryAllOnline" resultMap="UserLoginMap">
+		select * from USER_LOGIN_INFO
+		<where>
+			ONLINE_STATUS = 'ON'
+		</where>
+	</select>
+	
 	<select id="queryStatusById" parameterType="Integer" resultType="String">
 		select ONLINE_STATUS from USER_LOGIN_INFO
 		<where>

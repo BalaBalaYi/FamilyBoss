@@ -1,6 +1,7 @@
 package com.cty.family.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -25,6 +26,12 @@ public interface UserDao {
 	 * @return
 	 */
 	public List<UserEntity> queryAllOn();
+
+	/**
+	 * 查询所有在线的用户信息
+	 * @return
+	 */
+	public List<UserEntity> queryAllOnlineInfo();
 	
 	/**
 	 * 查询所有男性用户信息
@@ -91,6 +98,13 @@ public interface UserDao {
 	 * @return
 	 */
 	public int updateUser(UserEntity user);
+	
+	/**
+	 * 修改用户签名
+	 * @param params
+	 * @return
+	 */
+	public int updateUserSign(Map<String, Object> params);
 	
 	/**
 	 * 删除用户信息

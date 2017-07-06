@@ -1,5 +1,6 @@
 package com.cty.family.controller.user;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cty.family.entity.UserEntity;
+import com.cty.family.listener.LoginListener;
 import com.cty.family.service.UserService;
 
 import net.sf.ezmorph.object.DateMorpher;
@@ -37,6 +39,8 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private LoginListener loginListener;
 
 	/**
 	 * 跳转至用户管理主页面
@@ -267,6 +271,32 @@ public class UserController {
 	}
 	
 	/**
+	 * 执行签名修改
+	 * @param sign
+	 * @param session
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/doUpdateSign.do", method = RequestMethod.POST)
+	public Map<String, Object> doUpdateSign(@RequestParam("sign") String sign, HttpSession session) {
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		// 获取当前用户
+		UserEntity user = (UserEntity) session.getAttribute("userInfo");
+
+		logger.debug("准备修改用户签名：" + user.toString() + "，新签名：" + sign);
+		boolean updateResult =  userService.updateUserSign(user.getId(), sign);
+		
+		if(updateResult){
+			resultMap.put("updateResult", "修改成功！");
+		} else {
+			resultMap.put("updateResult", "修改失败！");
+		}
+		return resultMap;
+	}
+	
+	/**
 	 * 执行用户删除
 	 * @param id
 	 * @return
@@ -326,6 +356,25 @@ public class UserController {
 			resultMap.put("doStatusResult", (type == 0 ? "关闭账户" : "开启账户") + "失败！");
 			resultMap.put("reason", reason);
 		}
+		return resultMap;
+	}
+	
+	/**
+	 * 准实时监听当前在线用户
+	 * @return
+	 */
+	public Map<String, Object> getOnlineList(){
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		List<Integer> onlineList = new ArrayList<Integer>();
+		
+		// 根据登录监听器获取在线用户
+		Map<Integer, HttpSession> onlineMap = loginListener.getMap();
+		for(Integer id : onlineMap.keySet()){
+			onlineList.add(id);
+		}
+		
+		resultMap.put("onlineList", onlineList);
 		return resultMap;
 	}
 	

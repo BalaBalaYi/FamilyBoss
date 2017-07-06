@@ -13,9 +13,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author 陈天熠
  *
  */
-//@Configuration
-//@ComponentScan("com.cty.family")
-//@EnableScheduling
-//public class TaskSchedulerConfig {
-//
-//}
+@Configuration
+@ComponentScan("com.cty.family")
+@EnableScheduling
+public class TaskSchedulerConfig {
+
+}

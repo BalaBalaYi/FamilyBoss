@@ -35,6 +35,14 @@
 		</where>
 	</select>
 	
+	<select id="queryAllOnlineInfo" resultMap="UserMap">
+		select a.* from USER_INFO a, USER_LOGIN_INFO b,
+		<where>
+			a.ID = b.USER_ID
+			AND b.ONLINE_STATUS = 'ON'
+		</where>
+	</select>
+	
 	<select id="queryById" parameterType="Integer" resultMap="UserMap">
 		select * from USER_INFO 
 		<where>
@@ -166,6 +174,16 @@
 			<if test="sign != null">SIGN = #{sign,jdbcType=VARCHAR},</if>
 			<if test="reserved1 != null">RESERVED1 = #{reserved1,jdbcType=VARCHAR},</if>
 			<if test="reserved2 != null">RESERVED2 = #{reserved2,jdbcType=VARCHAR}</if>
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<update id="updateUserSign" parameterType="Map">
+		update USER_INFO
+		<set>
+			SIGN = #{sign,jdbcType=VARCHAR}
 		</set>
 		<where>
 			ID = #{id,jdbcType=INTEGER}

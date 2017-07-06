@@ -77,7 +77,7 @@ public class LoginController {
 		if(null != user) {
 			
 			// 更新登录信息
-			boolean updateLoginInfoResult = userService.modifyLoginInfo(user, NetUtil.getRemoteHost(request), 1);
+			boolean updateLoginInfoResult = userService.modifyLoginInfo(user.getId(), NetUtil.getRemoteHost(request), 1);
 			if(!updateLoginInfoResult){
 				logger.error("用户登出，更新用户登录信息失败！");
 			}

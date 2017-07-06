@@ -84,6 +84,8 @@ public class IMService {
 					String status = userService.getLoginStatus(groupUser.getId());
 					if(null != status && status.equals("ON")){
 						groupUserMap.put("status", "online");
+					} else {
+						groupUserMap.put("status", "offline");
 					}
 					groupUserMap.put("avatar", "/file/getImage.do?name=" + (StringUtils.isEmpty(groupUser.getImgName()) ? "default" : groupUser.getImgName()));
 					userInGroup.add(groupUserMap);
@@ -111,6 +113,8 @@ public class IMService {
 				String status = userService.getLoginStatus(defaultGroupUser.getId());
 				if(null != status && status.equals("ON")){
 					groupUserMap.put("status", "online");
+				} else {
+					groupUserMap.put("status", "offline");
 				}
 				groupUserMap.put("avatar", "/file/getImage.do?name=" + (StringUtils.isEmpty(defaultGroupUser.getImgName()) ? "default" : defaultGroupUser.getImgName()));
 				userInDefaultGroup.add(groupUserMap);
@@ -162,6 +166,7 @@ public class IMService {
 			resultMap.put("msg", "IM通讯列表格式转换异常");
 			return null;
 		}
+		logger.info("IM 初始化信息：" + resultJson.toString());
 		return resultJson;
 	}
 

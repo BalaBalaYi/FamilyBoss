@@ -170,6 +170,13 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 //		,skin: [ 
 //			'http://xxx.com/skin.jpg'
 //		]
+		
+		// 自定义工具栏
+		,tool: [{
+			alias: 'clear' // 工具别名
+			,title: '清空聊天记录' // 工具名称
+			,icon: '&#x1006;' // 工具图标
+		}] 
 	
 		,brief: false //是否简约模式（默认false，如果只用到在线客服，且不想显示主面板，可以设置 true）
 		,title: 'FamilyBoss-IM' //主面板最小化后显示的名称
@@ -178,19 +185,118 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 		,maxLength: 3000 //最长发送的字符长度，默认3000
 		,isfriend: true //是否开启好友（默认true，即开启）
 		,isgroup: true //是否开启群组（默认true，即开启）
-		,right: '0px' //默认0px，用于设定主面板右偏移量。该参数可避免遮盖你页面右下角已经的bar。
-		,chatLog: '/chat/log/' //聊天记录地址（如果未填则不显示）
-//		,find: '/find/all/' //查找好友/群的地址（如果未填则不显示）
-		,copyright: false //是否授权，如果通过官网捐赠获得LayIM，此处可填true
+		,right: '0px' //默认0px，用于设定主面板右偏移量。该参数可避免遮盖你页面右下角已经的bar
+//		,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+	});
+	
+	// 监听自定义工具栏点击
+	layim.on('tool(clear)', function(insert, send, obj){
+		
+	});	
+	
+	// 修改签名监听
+	layim.on('sign', function(value){
+		
+		// 同步到数据库修改
+		$.ajax({
+			url: "/user/doUpdateSign.do",
+			type: "POST",
+			data: {"sign": value},
+			dataType: "json",
+			success: function(res){
+			}
+		});
+	}); 
+	layim.on('chatOpen', function(res){
+		alert("打开");
+	})
+	//每次窗口打开或切换，即更新对方的状态
+	layim.on('chatChange', function(res){
+		var type = res.data.type;
+		var textarea = res.textarea;
+		$(textarea).unbind();
+		var judge = JSON.stringify(res.elem["0"]);
+		
+		var interval = 3000; // 间隔时间
+		var intervalResult = 0; // setInterval 返回值
+		
+		if(judge == "{}" && type == "friend"){
+			var startOffset = 0 // 起始偏移量
+			var offset = 0; // 偏移量
+			var flag = 1; // 0:typing 1:not typing
+
+			$(textarea).focus(function(){
+				$(textarea).bind("input propertychange", function(){
+					offset++;
+				});	
+				var sendTypingMsg = function(){
+					if(startOffset == 0 && (offset - startOffset) > 5 && flag == 1){
+						flag = 0;
+						console.log("typing sending :" + offset);
+						// 消息发送
+						var msg = {
+								type: 'tip'
+								,sender: $("#userId").val()
+								,senderName: $("#userName").val()
+								,reciever: res.data.id
+								,recieverName: res.data.username
+								,data: '对方正在输入...'
+						}		
+						socket.send(JSON.stringify(msg)); 
+						startOffset = offset;
+						interval += 1000; // 间隔时间增加1s
+					}
+				}
+				intervalResult = setInterval(sendTypingMsg, 3000);
+				if(intervalResult > 100){
+					$("a.layui-layer-close").click();
+				}
+			});
+			
+			$(textarea).blur(function(){
+				if(flag == 0){
+					flag = 1;
+					console.log("not typing sending:" + offset);
+					// 消息发送
+					var msg = {
+							type: 'tip'
+							,sender: $("#userId").val()
+							,senderName: $("#userName").val()
+							,reciever: res.data.id
+							,recieverName: res.data.username
+							,data: ''
+					}		
+					socket.send(JSON.stringify(msg)); 
+					// 重置
+					startOffset = 0;
+					offset = 0;
+				}
+				clearInterval(intervalResult); // 取消循环
+				interval = 3000; // 间隔时间重置为3s
+				
+			});
+			
+			// 重新激活事件
+			$(textarea).focus();
+		} else {
+			for(var i = 0; i <= 100; i++){ // 尽可能关闭interval循环 。。。。暂时没有想到更好的解决办法
+				clearInterval(i);
+			}
+		}
+		
 		
 	});
 	
+//	$(".layim-chat-textarea").children("textarea").focus(function(){
+//		console.log("focus!!!!!!!!!!!!!!!!!!");
+//	});
+
 	// =================== 建立WebSocket通讯 ===================
 	var socket;
 	if (!window.WebSocket){
-		alert("你的浏览器不支持websocket，请升级到IE10以上浏览器，或者使用谷歌、火狐、360浏览器。");
+		alert("你的浏览器不支持websocket，请升级到IE10以上浏览器，或者使用谷歌、火狐浏览器。");
 	} else {
-		socket = new WebSocket('ws://localhost:8080/websocket/' + $("#userId").val());
+		socket = new WebSocket('ws://192.168.18.241:8080/websocket/' + $("#userId").val());
 	}
 
 	// socket错误处理
@@ -212,15 +318,31 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 	socket.onmessage = function(response){
 		var data = response.data;
 		var dataJson = JSON.parse(data);
-		layim.getMessage({
-			username: dataJson.username
-			,avatar: dataJson.avatar
-			,id: dataJson.id
-			,type: dataJson.type
-			,content: dataJson.content
-			,mine: dataJson.mine
-			,timestamp: dataJson.timestamp
-		});
+		console.log("收到的消息："+dataJson);
+		var msgType = dataJson.msgType;
+		if(msgType == "sys"){
+			if(dataJson.type == "online" || dataJson.type == "offline"){
+				layim.setFriendStatus(dataJson.id, dataJson.type); // 通讯列表实时上下线
+			}
+		} else if (msgType == "tip"){
+			console.log("进入tip:"+dataJson.data + dataJson.senderName);
+			console.log($.trim($(".layim-chat-username").html()));
+			console.log($.trim($(".layim-chat-username").html()) == dataJson.senderName);
+			if($.trim($(".layim-chat-username").html()) == dataJson.senderName){
+				$("p.layim-chat-status").append('<span style="color:#FF5722;">'+ dataJson.data +'</span>');
+			}
+			
+		} else {
+			layim.getMessage({
+				username: dataJson.username
+				,avatar: dataJson.avatar
+				,id: dataJson.id
+				,type: dataJson.type
+				,content: dataJson.content
+				,mine: dataJson.mine
+				,timestamp: dataJson.timestamp
+			});
+		}
 	};
 	
 	// 监听发送的消息
@@ -253,10 +375,8 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 	// 判断连接是否建立
 	waitForConnection = function (callback, interval) {
 		if (socket.readyState === 1) {
-			console.log("1");
 			callback();
 		} else {
-			console.log("2");
 			var that = this;
 			setTimeout(function () {
 				that.waitForConnection(callback, interval);
@@ -265,7 +385,6 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 	}
 
 });
-
 
 // 天气插件
 (function(T, h, i, n, k, P, a, g, e) {
