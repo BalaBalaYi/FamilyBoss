@@ -2,52 +2,68 @@
 <html>
 <head>
 	<title>test</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/visJs/vis.min.css}" media="all" />
-	<style type="text/css">
-        #mynetwork {
-            width: 600px;
-            height: 400px;
-            border: 1px solid lightgray;
-        }
-    </style>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/animate.min.css}" media="all" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/default.css}" media="all" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/normalize.css}" media="all" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" media="all" />
+	<link rel="stylesheet" type="text/css" th:href="@{/css/third-party/font-awesome/css/font-awesome.min.css}" media="all" />
 </head>
 
 <body>
+<div><h1>Hello!</h1></div>
 
-<div id="mynetwork"></div>
+<div class="htmleaf-container">
+		
+		<div id='ss_menu'>
+		  <div>
+		    <i class="fa fa-battery-full"></i>
+		  </div>
+		  <div>
+		    <i class="fa fa-battery-full"></i>
+		  </div>
+		  <div>
+		    <i class="fa fa-weixin"></i>
+		  </div>
+		  <div>
+		    <i class="fa fa-renren"></i>
+		  </div>
+		  <div class='menu'>
+		    <div class='share' id='ss_toggle' data-rot='180'>
+		      <div class='circle'></div>
+		      <div class='bar'></div>
+		    </div>
+		  </div>
+		</div>
+		
+	</div>
 
 <script type="text/javascript" charset="utf8" th:src="@{/js/jquery/jquery-2.2.4.min.js}"></script>
-<script type="text/javascript" charset="utf8" th:src="@{/visJs/vis.min.js}"></script>
 <script type="text/javascript">
-	//create an array with nodes
-	var nodes = new vis.DataSet([
-	    {id: 1, label: 'Node 1'},
-	    {id: 2, label: 'Node 2'},
-	    {id: 3, label: 'Node 3'},
-	    {id: 4, label: 'Node 4'},
-	    {id: 5, label: 'Node 5'}
-	]);
-	
-	// create an array with edges
-	var edges = new vis.DataSet([
-	    {from: 1, to: 3},
-	    {from: 1, to: 2},
-	    {from: 2, to: 4},
-	    {from: 2, to: 5}
-	]);
-	
-	// create a network
-	var container = document.getElementById('mynetwork');
-	
-	// provide the data in the vis format
-	var data = {
-	    nodes: nodes,
-	    edges: edges
-	};
-	var options = {};
-	
-	// initialize your network!
-	var network = new vis.Network(container, data, options);
+$(document).ready(function (ev) {
+    var toggle = $('#ss_toggle');
+    var menu = $('#ss_menu');
+    var rot;
+    $('#ss_toggle').on('click', function (ev) {
+        rot = parseInt($(this).data('rot')) - 180;
+        menu.css('transform', 'rotate(' + rot + 'deg)');
+        menu.css('webkitTransform', 'rotate(' + rot + 'deg)');
+        if (rot / 180 % 2 == 0) {
+            toggle.parent().addClass('ss_active');
+            toggle.addClass('close');
+        } else {
+            toggle.parent().removeClass('ss_active');
+            toggle.removeClass('close');
+        }
+        $(this).data('rot', rot);
+    });
+    menu.on('transitionend webkitTransitionEnd oTransitionEnd', function () {
+        if (rot / 180 % 2 == 0) {
+            $('#ss_menu div i').addClass('ss_animate');
+        } else {
+            $('#ss_menu div i').removeClass('ss_animate');
+        }
+    });
+});
 </script>
 
 </body>

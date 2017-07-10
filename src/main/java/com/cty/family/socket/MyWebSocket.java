@@ -38,6 +38,14 @@ public class MyWebSocket {
 	//与某个客户端的连接会话，需要通过它来给客户端发送数据
 	private Session session;
 	
+	private UserService userService;
+	
+	public MyWebSocket(){
+		// 获取当前web应用的上下文环境
+		ApplicationContext ctx = ApplicationContextRegister.getApplicationContext();
+		this.userService = ctx.getBean(UserService.class);
+	}
+	
 	/**
 	 * 连接建立成功调用的方法
 	 * @param session
@@ -192,6 +200,9 @@ public class MyWebSocket {
 		returnMsgJson.put("msgType", "sys");
 		returnMsgJson.put("id", userId);
 		
+		UserEntity user = userService.getUserInfoById(userId);
+		returnMsgJson.put("name", user.getName());
+		
 		if(type == 0){
 			returnMsgJson.put("type", "online");
 		} else if (type == 1) {
@@ -229,7 +240,11 @@ public class MyWebSocket {
 		
 		// 发送
 		MyWebSocket recieverSocket = webSocketMap.get(reciever);
-		recieverSocket.sendMessage(returnMsgJson.toString());
+		if(null != recieverSocket){
+			recieverSocket.sendMessage(returnMsgJson.toString());
+		} else {
+			logger.debug("收信方已下线，取消tip发送");
+		}
 		
 		return true;
 	}
@@ -279,11 +294,7 @@ public class MyWebSocket {
 			}
 			
 		} else if ("group".equals(type)) { // 群组消息发送
-			
-			// 获取当前web应用的上下文环境
-			ApplicationContext ctx = ApplicationContextRegister.getApplicationContext();
-			UserService userService = ctx.getBean(UserService.class);
-			
+		
 			// 根据接收组id查询组内所有用户id，并依次发送信息
 			Integer groupId = Integer.parseInt(distId);
 			List<UserEntity> groupUserList = null;

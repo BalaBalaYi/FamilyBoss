@@ -59,14 +59,14 @@ public class OfflineMessageHandler {
 	 * 获取某个用户的离线消息，并通过socket发送
 	 * @param key 即userId
 	 */
-	public static void sendOfflineMsg(String key) {
+	public static void sendOfflineMsg(String userId) {
 		
-		LinkedList<String> offlineMsgList = offlineMsgMap.get(key);
+		LinkedList<String> offlineMsgList = offlineMsgMap.get(userId);
 		if(null != offlineMsgList && offlineMsgList.size() > 0) {
-			logger.info("用户id：" + key + "的离线消息有" + offlineMsgList.size() + "条");
+			logger.info("用户id：" + userId + "的离线消息有" + offlineMsgList.size() + "条");
 			try {
 				// 获取对应用户的socket对象
-				MyWebSocket reciever = MyWebSocket.getWebSocket(key);
+				MyWebSocket reciever = MyWebSocket.getWebSocket(userId);
 			
 				while(offlineMsgList.size() > 0) {
 					reciever.sendMessageSync(offlineMsgList.poll());

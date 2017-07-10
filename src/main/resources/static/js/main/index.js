@@ -183,9 +183,11 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 		,min: true //用于设定主面板是否在页面打开时，始终最小化展现。默认false，即记录上次展开状态。
 		,minRight: null //【默认不开启】用户控制聊天面板最小化时、及新消息提示层的相对right的px坐标，如：minRight: '200px'
 		,maxLength: 3000 //最长发送的字符长度，默认3000
-		,isfriend: true //是否开启好友（默认true，即开启）
-		,isgroup: true //是否开启群组（默认true，即开启）
-		,right: '0px' //默认0px，用于设定主面板右偏移量。该参数可避免遮盖你页面右下角已经的bar
+		,isAudio: true // 是否开启聊天工具栏音频（默认fasle，即关闭）
+		,isVideo: true // 是否开启聊天工具栏视频（默认fasle，即关闭）
+		,isfriend: true // 是否开启好友（默认true，即开启）
+		,isgroup: true // 是否开启群组（默认true，即开启）
+		,right: '0px' // 默认0px，用于设定主面板右偏移量。该参数可避免遮盖你页面右下角已经的bar
 //		,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
 	});
 	
@@ -210,7 +212,7 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 	layim.on('chatOpen', function(res){
 		alert("打开");
 	})
-	//每次窗口打开或切换，即更新对方的状态
+	// 每次窗口打开或切换，即更新对方的状态
 	layim.on('chatChange', function(res){
 		var type = res.data.type;
 		var textarea = res.textarea;
@@ -218,9 +220,39 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 		var judge = JSON.stringify(res.elem["0"]);
 		
 		var interval = 3000; // 间隔时间
-		var intervalResult = 0; // setInterval 返回值
+		var intervalResult1 = 0; // setInterval 返回值
+		var intervalResult2 = 0; // setInterval 返回值
 		
-		if(judge == "{}" && type == "friend"){
+		if(judge == "{}" && type == "friend"){ // 打开对话框状态
+			
+			// 在线或离线状态更新
+			var getOnlineStatus = function() {
+				$.ajax({
+					url: "/user/getOnlineStatus.do",
+					type: "GET",
+					data: {"userId": res.data.id},
+					dataType: "json",
+					success: function(res){
+						console.log("该用户状态：" + res.status);
+						var status = "离线";
+						var color = "#696969;";
+						if(res.status == "online"){
+							status = "在线";
+							color = "#00CD66;";
+						}
+						var nowVal = $(".chat-status-value").html();
+						layim.setChatStatus('<span class="chat-status-value" style="color:' + color + '">' + status + '</span>');
+					}
+				});
+			}
+			getOnlineStatus();
+//			intervalResult1 = setInterval(getOnlineStatus, 30*1000); // 然后每30s检查一次
+			
+			$("a.layui-layer-close").click(function(){ // 关闭对话框停止在线状态查验
+				clearInterval(intervalResult1);
+			});
+			
+			// 输入状态更新
 			var startOffset = 0 // 起始偏移量
 			var offset = 0; // 偏移量
 			var flag = 1; // 0:typing 1:not typing
@@ -247,7 +279,7 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 						interval += 1000; // 间隔时间增加1s
 					}
 				}
-				intervalResult = setInterval(sendTypingMsg, 3000);
+				intervalResult = setInterval(sendTypingMsg, 3*1000);
 				if(intervalResult > 100){
 					$("a.layui-layer-close").click();
 				}
@@ -264,14 +296,14 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 							,senderName: $("#userName").val()
 							,reciever: res.data.id
 							,recieverName: res.data.username
-							,data: ''
+							,data: '在线'
 					}		
 					socket.send(JSON.stringify(msg)); 
 					// 重置
 					startOffset = 0;
 					offset = 0;
 				}
-				clearInterval(intervalResult); // 取消循环
+				clearInterval(intervalResult2); // 取消循环
 				interval = 3000; // 间隔时间重置为3s
 				
 			});
@@ -286,17 +318,13 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 		
 		
 	});
-	
-//	$(".layim-chat-textarea").children("textarea").focus(function(){
-//		console.log("focus!!!!!!!!!!!!!!!!!!");
-//	});
 
 	// =================== 建立WebSocket通讯 ===================
 	var socket;
 	if (!window.WebSocket){
 		alert("你的浏览器不支持websocket，请升级到IE10以上浏览器，或者使用谷歌、火狐浏览器。");
 	} else {
-		socket = new WebSocket('ws://192.168.18.241:8080/websocket/' + $("#userId").val());
+		socket = new WebSocket('ws://' + $("#ip").val() + ':' + $("#port").val() + '/websocket/' + $("#userId").val());
 	}
 
 	// socket错误处理
@@ -318,18 +346,26 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 	socket.onmessage = function(response){
 		var data = response.data;
 		var dataJson = JSON.parse(data);
-		console.log("收到的消息："+dataJson);
+		console.log("收到的消息："+JSON.stringify(dataJson));
 		var msgType = dataJson.msgType;
 		if(msgType == "sys"){
 			if(dataJson.type == "online" || dataJson.type == "offline"){
 				layim.setFriendStatus(dataJson.id, dataJson.type); // 通讯列表实时上下线
+				// 如果存在聊天对话框，则设置显示“离线”
+				console.log($.trim($(".layim-chat-username").html())+"temp");
+				console.log(dataJson.name == $.trim($(".layim-chat-username").html()));
+				if($.trim($(".layim-chat-username").html()) == dataJson.name){
+					if(dataJson.type == "offline"){
+						layim.setChatStatus('<span class="chat-status-value" style="color:#696969;">离线</span>');
+					} else {
+						layim.setChatStatus('<span class="chat-status-value" style="color:#00CD66;">在线</span>');
+					}
+				}
 			}
 		} else if (msgType == "tip"){
-			console.log("进入tip:"+dataJson.data + dataJson.senderName);
-			console.log($.trim($(".layim-chat-username").html()));
-			console.log($.trim($(".layim-chat-username").html()) == dataJson.senderName);
+			console.log($(".chat-status-value").html());
 			if($.trim($(".layim-chat-username").html()) == dataJson.senderName){
-				$("p.layim-chat-status").append('<span style="color:#FF5722;">'+ dataJson.data +'</span>');
+				$(".chat-status-value").html(dataJson.data);
 			}
 			
 		} else {

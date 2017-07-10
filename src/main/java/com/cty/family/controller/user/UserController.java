@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cty.family.entity.UserEntity;
 import com.cty.family.listener.LoginListener;
 import com.cty.family.service.UserService;
+import com.cty.family.socket.MyWebSocket;
 
 import net.sf.ezmorph.object.DateMorpher;
 import net.sf.json.JSONObject;
@@ -363,6 +364,7 @@ public class UserController {
 	 * 准实时监听当前在线用户
 	 * @return
 	 */
+	@RequestMapping("/getOnlineList.do")
 	public Map<String, Object> getOnlineList(){
 		
 		Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -375,6 +377,22 @@ public class UserController {
 		}
 		
 		resultMap.put("onlineList", onlineList);
+		return resultMap;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getOnlineStatus.do")
+	public Map<String, Object> getOnlineStatus(@RequestParam("userId") String userId){
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 根据socket连接判断该用户是否实时在线
+		MyWebSocket reciever = MyWebSocket.getWebSocket(userId);
+		if(null != reciever) {
+			resultMap.put("status", "online");
+		} else {
+			resultMap.put("status", "offline");
+		} 
 		return resultMap;
 	}
 	

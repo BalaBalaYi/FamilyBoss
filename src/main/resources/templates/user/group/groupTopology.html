@@ -265,6 +265,11 @@
 				network.on('dragEnd', function () {
 					changeCursor('grab');
 				});
+				
+				// 点击事件
+				network.on('doubleClick', function () {
+					console.log('doubleClick');
+				});
 			}
 			
 			// 聚焦事件

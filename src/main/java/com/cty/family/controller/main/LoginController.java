@@ -1,5 +1,7 @@
 package com.cty.family.controller.main;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,6 +27,9 @@ import com.cty.family.util.NetUtil;
 public class LoginController {
 	
 	private Logger logger = LoggerFactory.getLogger(LoginController.class);
+	
+	@Value("${server.port}")
+	private Integer port;
 	
 	@Autowired
 	private UserService userService;
@@ -57,6 +63,16 @@ public class LoginController {
 			// 获取登录信息
 			UserLoginEntity loginInfo = userService.getLoginInfoById(user.getId());
 			session.setAttribute("loginInfo", loginInfo);
+			
+			// 加入服务端本地主机和端口信息
+			String localIp = "localhost";
+			try {
+				localIp = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e) {
+				logger.error("获取服务端本地IP异常", e);
+			}
+			resultMap.put("ip", localIp);
+			resultMap.put("port", port);
 			
 			return new ModelAndView("/index", resultMap);
 		} else {
