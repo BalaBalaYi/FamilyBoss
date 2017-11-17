@@ -9,7 +9,7 @@ var locationError;
 // layui 初始化
 layui.use(['element', 'layer'], function(){
 	var $ = layui.jquery
-	, element = layui.element()
+	, element = layui.element
 	, layer = layui.layer;
 	
 	//模拟进度条loading（1s延迟）

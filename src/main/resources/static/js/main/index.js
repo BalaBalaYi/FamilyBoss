@@ -1,6 +1,6 @@
 layui.use(['element', 'util', 'layer', 'layim'], function(){
 	var $ = layui.jquery
-	, element = layui.element()
+	, element = layui.element
 	, util = layui.util
 	, layer = layui.layer
 	, layim = layui.layim;
@@ -233,7 +233,7 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 					data: {"userId": res.data.id},
 					dataType: "json",
 					success: function(res){
-						console.log("该用户状态：" + res.status);
+//						console.log("该用户状态：" + res.status);
 						var status = "离线";
 						var color = "#696969;";
 						if(res.status == "online"){
@@ -264,7 +264,7 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 				var sendTypingMsg = function(){
 					if(startOffset == 0 && (offset - startOffset) > 5 && flag == 1){
 						flag = 0;
-						console.log("typing sending :" + offset);
+//						console.log("typing sending :" + offset);
 						// 消息发送
 						var msg = {
 								type: 'tip'
@@ -288,7 +288,7 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 			$(textarea).blur(function(){
 				if(flag == 0){
 					flag = 1;
-					console.log("not typing sending:" + offset);
+//					console.log("not typing sending:" + offset);
 					// 消息发送
 					var msg = {
 							type: 'tip'
@@ -346,14 +346,14 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 	socket.onmessage = function(response){
 		var data = response.data;
 		var dataJson = JSON.parse(data);
-		console.log("收到的消息："+JSON.stringify(dataJson));
+//		console.log("收到的消息："+JSON.stringify(dataJson));
 		var msgType = dataJson.msgType;
 		if(msgType == "sys"){
 			if(dataJson.type == "online" || dataJson.type == "offline"){
 				layim.setFriendStatus(dataJson.id, dataJson.type); // 通讯列表实时上下线
 				// 如果存在聊天对话框，则设置显示“离线”
-				console.log($.trim($(".layim-chat-username").html())+"temp");
-				console.log(dataJson.name == $.trim($(".layim-chat-username").html()));
+//				console.log($.trim($(".layim-chat-username").html())+"temp");
+//				console.log(dataJson.name == $.trim($(".layim-chat-username").html()));
 				if($.trim($(".layim-chat-username").html()) == dataJson.name){
 					if(dataJson.type == "offline"){
 						layim.setChatStatus('<span class="chat-status-value" style="color:#696969;">离线</span>');
@@ -363,7 +363,7 @@ layui.use(['element', 'util', 'layer', 'layim'], function(){
 				}
 			}
 		} else if (msgType == "tip"){
-			console.log($(".chat-status-value").html());
+//			console.log($(".chat-status-value").html());
 			if($.trim($(".layim-chat-username").html()) == dataJson.senderName){
 				$(".chat-status-value").html(dataJson.data);
 			}

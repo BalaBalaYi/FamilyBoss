@@ -16,6 +16,25 @@
 		<link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}" media="all" />
 		<link rel="stylesheet" type="text/css" th:href="@{/js/jquery/sweetalert2/sweetalert2.min.css}" media="all" />
 		<link rel="stylesheet" type="text/css" th:href="@{/dataTables/media/css/jquery.dataTables.css}" media="all" />
+		<style type="text/css">
+			label input{
+				border-radius: 4px;
+				border: 1px solid #ccc;
+/* 				background-color: #fff; */
+/* 				box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset; */
+/* 				transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s; */
+/* 				color: #555; */
+/* 				display: inline-block; */
+/* 				font-size: 14px; */
+/* 				height: 20px; */
+/* 				line-height: 20px; */
+/* 				margin-bottom: 10px; */
+/* 				padding: 4px 6px; */
+/* 				vertical-align: middle; */
+/* 				box-sizing: content-box; */
+/* 				font-weight: normal; */
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -35,8 +54,7 @@
 			<div class="layui-colla-item">
 				<h2 class="layui-colla-title"><i class="layui-icon">&#xe62d;</i>&nbsp;人员列表</h2>
 				<div class="layui-colla-content layui-show">
-
-					<table id="table_user" class="display" style="text-align: center;">
+					<table id="table_user" class="display cell-border" style="text-align: center;">
 						<thead>
 							<tr>
 								<th>姓名</th>
@@ -83,11 +101,12 @@
 		<script type="text/javascript" charset="utf8" th:src="@{/js/jquery/sweetalert2/sweetalert2.min.js}"></script>
 		<script type="text/javascript" charset="utf8" th:src="@{/dataTables/media/js/jquery.dataTables.js}"></script>
 		<script type="text/javascript" charset="utf8" th:src="@{/js/util/dateUtil.js}"></script>
+		
 		<script>
 			layui.use(['element', 'form', 'layer'], function(){
 				var $ = layui.jquery
-				, element = layui.element()
-				, form = layui.form()
+				, element = layui.element
+				, form = layui.form
 				, layer = layui.layer;
 				
 				$('#closeAcct').on('click', function(){

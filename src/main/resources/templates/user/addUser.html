@@ -79,7 +79,7 @@
 				<div class="layui-inline">
 					<label class="layui-form-label">出生日期</label>
 					<div class="layui-input-inline">
-						<input type="text" name="birth" id="birth" lay-verify="date" placeholder="yyyy-mm-dd" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})" />
+						<input type="text" name="birth" id="birth" lay-verify="date" placeholder="yyyy-mm-dd" autocomplete="off" class="layui-input" />
 					</div>
 				</div>
 				<div class="layui-inline">
@@ -245,13 +245,19 @@
 			
 			// laiui 初始化
 			layui.use(['element', 'form', 'layedit', 'laydate', 'jquery', 'upload'], function(){
-				var element = layui.element()
-					, form = layui.form()
+				var element = layui.element
+					, form = layui.form
 					, layedit = layui.layedit
 					, laydate = layui.laydate
 					, $ = layui.jquery;
+				
+				// 开启日历
+				laydate.render({
+					elem: '#birth'
+					,calendar: true
+				});
 
-				//创建一个编辑器
+				// 创建一个编辑器
 				var editIndex = layedit.build('LAY_editor', {
 					tool: ['strong' //加粗
 							,'italic' //斜体

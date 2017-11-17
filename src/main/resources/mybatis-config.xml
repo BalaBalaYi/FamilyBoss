@@ -9,6 +9,8 @@
 		<typeAlias type="com.cty.family.entity.ImageEntity" alias="Image" />
 		<typeAlias type="com.cty.family.entity.GroupEntity" alias="Group" />
 		<typeAlias type="com.cty.family.entity.UserLoginEntity" alias="UserLogin" />
+		<typeAlias type="com.cty.family.entity.AuthEntity" alias="Auth" />
+		<typeAlias type="com.cty.family.entity.RoleEntity" alias="Role" />
 	</typeAliases>
 
 </configuration>

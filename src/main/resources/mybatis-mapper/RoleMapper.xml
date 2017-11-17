@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cty.family.dao.RoleDao">
+	<resultMap id="RoleMap" type="Role">
+		<result property="id" column="ID" jdbcType="INTEGER" />
+		<result property="name" column="NAME" jdbcType="VARCHAR" />
+		<result property="fullName" column="FULL_NAME" jdbcType="VARCHAR" />
+		<result property="desc" column="ROLE_DESC" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryAll" resultMap="RoleMap">
+		select * from ROLE_INFO
+	</select>
+	
+	<select id="queryById" parameterType="Integer" resultMap="RoleMap">
+		select * from ROLE_INFO
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<select id="queryByName" parameterType="String" resultMap="RoleMap">
+		select * from ROLE_INFO
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	<select id="queryByFullName" parameterType="String" resultMap="RoleMap">
+		select * from ROLE_INFO
+		<where>
+			FULL_NAME = #{fullName,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<insert id="addRole" parameterType="Role">
+		insert into ROLE_INFO
+				(
+				NAME,
+				FULL_NAME,
+				ROLE_DESC
+				)
+			values
+				(
+				#{name,jdbcType=VARCHAR},
+				#{fullName,jdbcType=VARCHAR},
+				#{desc,jdbcType=VARCHAR}
+				)
+	</insert>
+	
+	<update id="updateRole" parameterType="Role">
+		update ROLE_INFO
+		<set>
+			<if test="name != null">NAME = #{name,jdbcType=VARCHAR},</if>
+			<if test="fullName != null">FULL_NAME = #{fullName,jdbcType=VARCHAR},</if>
+			<if test="desc != null">ROLE_DESC = #{desc,jdbcType=VARCHAR}</if>
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<delete id="deleteRole" parameterType="Integer">
+		delete from ROLE_INFO
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</delete>
+
+</mapper>

@@ -95,5 +95,27 @@
 		timeToIdleSeconds="0"
 		timeToLiveSeconds="3000"
 		memoryStoreEvictionPolicy="LRU" />
+	
+	<!-- 权限信息 -->
+	<cache
+		name="auth"
+		maxElementsInMemory="300"
+		eternal="false"
+		overflowToDisk="false"
+		diskPersistent="false"
+		timeToIdleSeconds="0"
+		timeToLiveSeconds="3000"
+		memoryStoreEvictionPolicy="LRU" />
+	
+	<!-- 角色信息 -->
+	<cache
+		name="role"
+		maxElementsInMemory="300"
+		eternal="false"
+		overflowToDisk="false"
+		diskPersistent="false"
+		timeToIdleSeconds="0"
+		timeToLiveSeconds="3000"
+		memoryStoreEvictionPolicy="LRU" />
 			
 </ehcache>

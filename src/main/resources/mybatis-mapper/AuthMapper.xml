@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cty.family.dao.AuthDao">
+	<resultMap id="AuthMap" type="Auth">
+		<result property="id" column="ID" jdbcType="INTEGER" />
+		<result property="name" column="NAME" jdbcType="VARCHAR" />
+		<result property="tag" column="TAG" jdbcType="VARCHAR" />
+		<result property="desc" column="AUTH_DESC" jdbcType="VARCHAR" />
+		<result property="parentId" column="PARENT_ID" jdbcType="INTEGER" />
+		<result property="url" column="URL" jdbcType="VARCHAR" />
+		<result property="orderNum" column="ORDER_NUM" jdbcType="INTEGER" />
+		<result property="imgName" column="IMG_NAME" jdbcType="VARCHAR" />
+		<result property="imgUrl" column="IMG_URL" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryAll" resultMap="AuthMap">
+		select * from AUTH_INFO
+	</select>
+	
+	<select id="queryById" parameterType="Integer" resultMap="AuthMap">
+		select * from AUTH_INFO
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</select>
+	
+	<select id="queryByName" parameterType="String" resultMap="AuthMap">
+		select * from AUTH_INFO
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	<insert id="addAuth" parameterType="Auth">
+		insert into AUTH_INFO
+				(
+				NAME,
+				TAG,
+				AUTH_DESC,
+				PARENT_ID,
+				URL,
+				ORDER_NUM,
+				IMG_NAME,
+				IMG_URL
+				)
+			values
+				(
+				#{name,jdbcType=VARCHAR},
+				#{tag,jdbcType=VARCHAR},
+				#{desc,jdbcType=VARCHAR},
+				#{parentId,jdbcType=INTEGER},
+				#{url,jdbcType=VARCHAR},
+				#{orderNum,jdbcType=INTEGER},
+				#{imgName,jdbcType=VARCHAR},
+				#{imgUrl,jdbcType=VARCHAR}
+				)
+	</insert>
+	
+	<update id="updateAuth" parameterType="Auth">
+		update AUTH_INFO
+		<set>
+			<if test="name != null">NAME = #{name,jdbcType=VARCHAR},</if>
+			<if test="tag != null">TAG = #{tag,jdbcType=VARCHAR},</if>
+			<if test="desc != null">AUTH_DESC = #{desc,jdbcType=VARCHAR},</if>
+			<if test="parentId != null">PARENT_ID = #{parentId,jdbcType=INTEGER},</if>
+			<if test="url != null">URL = #{url,jdbcType=VARCHAR},</if>
+			<if test="orderNum != null">ORDER_NUM = #{orderNum,jdbcType=INTEGER},</if>
+			<if test="imgName != null">IMG_NAME = #{imgName,jdbcType=VARCHAR},</if>
+			<if test="imgUrl != null">IMG_URL = #{imgUrl,jdbcType=VARCHAR}</if>
+		</set>
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</update>
+	
+	<delete id="deleteAuth" parameterType="Integer">
+		delete from AUTH_INFO
+		<where>
+			ID = #{id,jdbcType=INTEGER}
+		</where>
+	</delete>
+
+</mapper>

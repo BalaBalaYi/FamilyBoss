@@ -70,7 +70,7 @@ public class GroupService {
 	 * @return
 	 */
 	@Cacheable(value = "group", key = "#name")
-	public GroupEntity getGroupInfoById(String name) {
+	public GroupEntity getGroupInfoByName(String name) {
 		
 		GroupEntity group;
 		try {
@@ -207,7 +207,7 @@ public class GroupService {
 	
 	/**
 	 * 群组参数校验
-	 * @param user
+	 * @param group
 	 * @return
 	 */
 	public boolean verifyGroup(GroupEntity group) {
